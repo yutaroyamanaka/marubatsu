@@ -10,5 +10,5 @@ backend
 ```
 # from backend direcotry
 $ docker build -t marubatsu-backend -f ./Dockerfile .
-$ 
+$ docker run -it -p 8888:8888 marubatsu-backend 
 ```

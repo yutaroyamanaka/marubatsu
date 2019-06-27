@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import sys
-sys.path.append("/marubatsu/backend/")
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from rl.qlearn import TicTacToe, QLearningPlayer, Player
 import pickle
 
@@ -79,8 +80,13 @@ def reset():
         return result
 
 
+@app.route("/api/board/info", methods=["GET"])
+def board_info():
+    return jsonify({"board": ttt.board}), 200
+
+
 @app.route("/api/player/info/<user_id>", methods=["GET"])
-def info(user_id):
+def player_info(user_id):
     try:
         if int(user_id) == 1:
             res = {
@@ -104,16 +110,13 @@ def info(user_id):
         return result
 
 
-@app.errorhandler(400)
-@app.errorhandler(404)
-@app.errorhandler(500)
 def error_handler(error):
     response = jsonify({
                           "error": {
                           "message": str(error)
                           }
                       })
-    return response, error.code
+    return response, 500
 
 
 if __name__ == '__main__':

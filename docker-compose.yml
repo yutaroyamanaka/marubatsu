@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  frontend:
+    restart: always
+    image: marubatsu-frontend
+    build: ./frontend
+    networks:
+      - my_network
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    command: yarn start
+
+  backend:
+    restart: always
+    image: marubatsu-backend
+    build: ./backend
+    ports:
+      - "8888:8888"
+    networks:
+      - my_network
+networks:
+  my_network:
+    external: true

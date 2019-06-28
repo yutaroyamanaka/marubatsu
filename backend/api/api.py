@@ -4,8 +4,10 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from rl.qlearn import TicTacToe, QLearningPlayer, Player
 import pickle
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 player1 = Player()
 player2 = QLearningPlayer(epsilon=0)
 

@@ -1,0 +1,5 @@
+FROM node:8
+MAINTAINER YUTARO_YAMANAKA
+
+RUN mkdir /code
+WORKDIR /code

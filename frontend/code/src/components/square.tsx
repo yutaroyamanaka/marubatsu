@@ -35,10 +35,21 @@ export default class Square extends React.Component<Props, State>{
         }
     }
 
-    setRock() {
+    componentDidMount(): void {
         this.setState({
-            rock: "X"
+            rock: this.props.rock
         })
+    }
+
+    setRock() {
+        if(this.props.available) {
+            this.setState({
+            rock: "X"
+            });
+        } else {
+            alert("そこには置けません！");
+        }
+
     }
 
     render() {

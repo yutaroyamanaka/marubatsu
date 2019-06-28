@@ -26,18 +26,30 @@ function SubmitButton(Props: buttonProps) {
     )
 }
 
-interface Props {
-    status: boolean
-    board: Array<string>
+interface Props {}
+
+interface State {
+    board: Array<string>,
+    finish: boolean,
+    player1Win: boolean,
+    player2Win: boolean,
 }
 
-export default class Board extends React.Component<Props, {}> {
+export default class Board extends React.Component<Props, State> {
 
     constructor(props: any){
         super(props);
+        this.state = {
+            board: [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            finish: false,
+            player1Win: false,
+            player2Win: false,
+        };
+        this.handleOnClick = this.handleOnClick.bind(this);
+        this.judgeAvailability = this.judgeAvailability.bind(this);
     }
 
-    async handleOnClick() {
+    handleOnClick() {
         fetch('http://localhost:8888/api/reset', {
             mode: 'cors',
         })
@@ -52,28 +64,42 @@ export default class Board extends React.Component<Props, {}> {
         })
             .then(response => response.json())
             .then(response => {
-                console.log(response)
+                this.setState({
+                    board: response["board"],
+                    finish: response["finish"],
+                    player1Win: response["player1-win"],
+                    player2Win: response["player2-win"]
+                });
             });
+
+        console.log(this.state)
     }
 
+    judgeAvailability(rock: string) {
+        if(rock === " ") return true;
+        return false;
+    }
+
+
     render() {
-        let board = this.props.board;
+        let board = this.state.board;
+        console.log(this.state);
         return(
             <div>
                 <div className="board-row">
-                <Square rock={board[0]} available={true}/>
-                <Square rock={board[1]} available={true}/>
-                <Square rock={board[2]} available={true}/>
+                <Square rock={board[0]} available={this.judgeAvailability(board[0])}/>
+                <Square rock={board[1]} available={this.judgeAvailability(board[1])}/>
+                <Square rock={board[2]} available={this.judgeAvailability(board[2])}/>
                 </div>
                 <div className="board-row">
-                <Square rock={board[3]} available={true}/>
-                <Square rock={board[4]} available={true}/>
-                <Square rock={board[5]} available={true}/>
+                <Square rock={board[3]} available={this.judgeAvailability(board[3])}/>
+                <Square rock={board[4]} available={this.judgeAvailability(board[4])}/>
+                <Square rock={board[5]} available={this.judgeAvailability(board[5])}/>
                 </div>
                 <div className="board-row">
-                <Square rock={board[6]} available={true}/>
-                <Square rock={board[7]} available={true}/>
-                <Square rock={board[8]} available={true}/>
+                <Square rock={board[6]} available={this.judgeAvailability(board[6])}/>
+                <Square rock={board[7]} available={this.judgeAvailability(board[7])}/>
+                <Square rock={board[8]} available={this.judgeAvailability(board[8])}/>
                 </div>
                 <SubmitButton handleOnClick={() => this.handleOnClick()}/>
             </div>

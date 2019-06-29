@@ -3,12 +3,26 @@
 強化学習のQ-learningによって学習したエージェントと戦う三目並べゲーム。
 いずれは、n目並べなどの複雑な状況にもしていく
 
-### set up
+今はこんな感じ
 
-backend
+<img src="pics/tictactoe.gif"/>
+
+### ローカルで動かす
+
+using docker-compose
 
 ```
-# from backend direcotry
-$ docker build -t marubatsu-backend -f ./Dockerfile .
-$ docker run -it -p 8888:8888 marubatsu-backend 
+$ docker-compose up --build
 ```
+
+### アーキテクチャ
+
+現在は、dockerで動かしている。
+将来的には、Appコンテナの前に、プロキシサーバーのコンテナを置くのが良いのだろうか？
+
+<img src="./pics/arch-local.jpeg"/>
+
+
+### Q学習
+
+<img src="./pics/q-learning.png"/>

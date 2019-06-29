@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Square from './square';
 import Button from '@material-ui/core/Button';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles} from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -37,7 +37,7 @@ interface State {
 
 export default class Board extends React.Component<Props, State> {
 
-    constructor(props: any){
+    constructor(props: any) {
         super(props);
         this.state = {
             board: [" ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -47,16 +47,17 @@ export default class Board extends React.Component<Props, State> {
         };
         this.handleOnClick = this.handleOnClick.bind(this);
         this.judgeAvailability = this.judgeAvailability.bind(this);
+        this.setRock = this.setRock.bind(this);
     }
 
-    handleOnClick() {
+    handleOnClick() : void {
+
+
         fetch('http://localhost:8888/api/reset', {
             mode: 'cors',
         })
-            .then(response => response.json())
-            .then(response => {
-                console.log(response)
-            });
+            .then(response => response.json());
+
 
 
         fetch('http://localhost:8888/api/start', {
@@ -71,35 +72,64 @@ export default class Board extends React.Component<Props, State> {
                     player2Win: response["player2-win"]
                 });
             });
-
-        console.log(this.state)
     }
 
-    judgeAvailability(rock: string) {
+
+    setRock(index: number): void {
+        let board = this.state.board;
+        if (board[index-1] !== " ") {
+            alert("そこには置けません！")
+        } else{
+            board[index-1] = 'X';
+            this.setState({
+                board: board,
+            });
+
+            fetch('http://localhost:8888/api/play', {
+                method: "POST",
+                mode: 'cors',
+                body: JSON.stringify({"idx": index}),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json())
+              .then( res => {
+                  this.setState({
+                    board: res["board"],
+                    finish: res["finish"],
+                    player1Win: res["player1-win"],
+                    player2Win: res["player2-win"]
+                  });
+              })
+        }
+
+    }
+
+    judgeAvailability(rock: string) : boolean {
         if(rock === " ") return true;
-        return false;
+        else return false;
     }
 
 
     render() {
-        let board = this.state.board;
         console.log(this.state);
         return(
             <div>
                 <div className="board-row">
-                <Square rock={board[0]} available={this.judgeAvailability(board[0])}/>
-                <Square rock={board[1]} available={this.judgeAvailability(board[1])}/>
-                <Square rock={board[2]} available={this.judgeAvailability(board[2])}/>
+                <Square index={1} rock={this.state.board[0]} available={this.judgeAvailability(this.state.board[0])} setRock={() => this.setRock(1)}/>
+                <Square index={2} rock={this.state.board[1]} available={this.judgeAvailability(this.state.board[1])} setRock={() => this.setRock(2)}/>
+                <Square index={3} rock={this.state.board[2]} available={this.judgeAvailability(this.state.board[2])} setRock={() => this.setRock(3)}/>
                 </div>
                 <div className="board-row">
-                <Square rock={board[3]} available={this.judgeAvailability(board[3])}/>
-                <Square rock={board[4]} available={this.judgeAvailability(board[4])}/>
-                <Square rock={board[5]} available={this.judgeAvailability(board[5])}/>
+                <Square index={4} rock={this.state.board[3]} available={this.judgeAvailability(this.state.board[3])} setRock={() => this.setRock(4)}/>
+                <Square index={5} rock={this.state.board[4]} available={this.judgeAvailability(this.state.board[4])} setRock={() => this.setRock(5)}/>
+                <Square index={6} rock={this.state.board[5]} available={this.judgeAvailability(this.state.board[5])} setRock={() => this.setRock(6)}/>
                 </div>
                 <div className="board-row">
-                <Square rock={board[6]} available={this.judgeAvailability(board[6])}/>
-                <Square rock={board[7]} available={this.judgeAvailability(board[7])}/>
-                <Square rock={board[8]} available={this.judgeAvailability(board[8])}/>
+                <Square index={7} rock={this.state.board[6]} available={this.judgeAvailability(this.state.board[6])} setRock={() => this.setRock(7)}/>
+                <Square index={8} rock={this.state.board[7]} available={this.judgeAvailability(this.state.board[7])} setRock={() => this.setRock(8)}/>
+                <Square index={9} rock={this.state.board[8]} available={this.judgeAvailability(this.state.board[8])} setRock={() => this.setRock(9)}/>
                 </div>
                 <SubmitButton handleOnClick={() => this.handleOnClick()}/>
             </div>

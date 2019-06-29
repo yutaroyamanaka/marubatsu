@@ -16,7 +16,7 @@ $ docker-compose up --build
 現在は、dockerで動かしている。
 将来的には、Appコンテナの前に、プロキシサーバーのコンテナを置くのが良いのだろうか？
 
-<img src="./pics/architecture-local.jpeg"/>
+<img src="./pics/arch-local.jpeg"/>
 
 
 ### Q学習

@@ -1,14 +1,15 @@
 import * as React from 'react';
-import {string} from "prop-types";
 
 
 interface Props {
     rock : string
     available: boolean
+    index: number
+    setRock(): void
 }
 
 interface State {
-    rock?: string
+    rock: string
 }
 
 const style : React.CSSProperties =  {
@@ -31,20 +32,23 @@ export default class Square extends React.Component<Props, State>{
     constructor(props : any) {
         super(props);
         this.state = {
-            rock:this.props.rock
+            rock: this.props.rock
+        };
+    }
+
+    componentDidUpdate(): void {
+        if(this.state.rock !== this.props.rock) {
+            this.setState({
+                rock: this.props.rock
+            })
         }
     }
 
-    setRock() {
-        this.setState({
-            rock: "X"
-        })
-    }
 
     render() {
 
         return(
-            <button style={style} onClick={() => this.setRock()}>
+            <button style={style} onClick={() => this.props.setRock()}>
                 {this.state.rock}
             </button>
         )

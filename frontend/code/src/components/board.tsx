@@ -2,6 +2,7 @@ import * as React from 'react';
 import Square from './square';
 import Button from '@material-ui/core/Button';
 import { makeStyles} from '@material-ui/core/styles';
+import Message from './message';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -33,6 +34,8 @@ interface State {
     finish: boolean,
     player1Win: boolean,
     player2Win: boolean,
+    start: boolean,
+    message: string
 }
 
 export default class Board extends React.Component<Props, State> {
@@ -44,6 +47,8 @@ export default class Board extends React.Component<Props, State> {
             finish: false,
             player1Win: false,
             player2Win: false,
+            start: false,
+            message: "",
         };
         this.handleOnClick = this.handleOnClick.bind(this);
         this.judgeAvailability = this.judgeAvailability.bind(this);
@@ -56,7 +61,12 @@ export default class Board extends React.Component<Props, State> {
         fetch('http://localhost:8888/api/reset', {
             mode: 'cors',
         })
-            .then(response => response.json());
+            .then(response => response.json())
+            .then(response => {
+                this.setState({
+                    message: response["turn"]
+                })
+            });
 
 
 
@@ -69,7 +79,8 @@ export default class Board extends React.Component<Props, State> {
                     board: response["board"],
                     finish: response["finish"],
                     player1Win: response["player1-win"],
-                    player2Win: response["player2-win"]
+                    player2Win: response["player2-win"],
+                    start: true
                 });
             });
     }
@@ -77,31 +88,51 @@ export default class Board extends React.Component<Props, State> {
 
     setRock(index: number): void {
         let board = this.state.board;
-        if (board[index-1] !== " ") {
-            alert("そこには置けません！")
-        } else{
-            board[index-1] = 'X';
-            this.setState({
-                board: board,
-            });
+        if (this.state.start && !this.state.finish) {
+            if (board[index-1] !== " ") {
+                alert("そこには置けません！")
+            } else{
+                board[index-1] = 'X';
+                this.setState({
+                    board: board,
+                });
 
-            fetch('http://localhost:8888/api/play', {
-                method: "POST",
-                mode: 'cors',
-                body: JSON.stringify({"idx": index}),
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => res.json())
-              .then( res => {
-                  this.setState({
-                    board: res["board"],
-                    finish: res["finish"],
-                    player1Win: res["player1-win"],
-                    player2Win: res["player2-win"]
-                  });
-              })
+                fetch('http://localhost:8888/api/play', {
+                    method: "POST",
+                    mode: 'cors',
+                    body: JSON.stringify({"idx": index}),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                }).then(res => res.json())
+                .then( res => {
+                    if(res["finish"]) this.setState({
+                        start: false
+                    });
+
+                    this.setState({
+                        board: res["board"],
+                        finish: res["finish"],
+                        player1Win: res["player1-win"],
+                        player2Win: res["player2-win"]
+                    });
+
+                    if(res["finish"] && res["player1-win"]) {
+                        this.setState({
+                            message: "You Win!"
+                        })
+                    } else if(res["finish"] && res["player2-win"]){
+                        this.setState({
+                            message: "You Lose!"
+                        })
+                    } else if(res["finish"]){
+                        this.setState({
+                            message: "Draw!"
+                        })
+                    }
+                })
+            }
         }
 
     }
@@ -116,6 +147,7 @@ export default class Board extends React.Component<Props, State> {
         console.log(this.state);
         return(
             <div>
+                <Message message={this.state.message}/>
                 <div className="board-row">
                 <Square index={1} rock={this.state.board[0]} available={this.judgeAvailability(this.state.board[0])} setRock={() => this.setRock(1)}/>
                 <Square index={2} rock={this.state.board[1]} available={this.judgeAvailability(this.state.board[1])} setRock={() => this.setRock(2)}/>

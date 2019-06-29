@@ -3,6 +3,10 @@
 強化学習のQ-learningによって学習したエージェントと戦う三目並べゲーム。
 いずれは、n目並べなどの複雑な状況にもしていく
 
+今はこんな感じ
+
+<img src="pics/tictactoe.gif"/>
+
 ### ローカルで動かす
 
 using docker-compose

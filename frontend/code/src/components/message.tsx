@@ -33,9 +33,9 @@ export default class Message extends React.Component<Props, State> {
 
     render() {
         return(
-            <div style={style}>
+            <p style={style}>
                 {this.state.message}
-            </div>
+            </p>
         )
     }
 }

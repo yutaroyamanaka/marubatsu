@@ -14,18 +14,31 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface buttonProps {
-    handleOnClick():void;
+    handleOnClick(cmd : string):void;
 }
 
-function SubmitButton(Props: buttonProps) {
+function StartButton(Props: buttonProps) {
     const classes = useStyles();
 
     return(
-        <Button variant="contained" color="secondary" className={classes.button} onClick={() => Props.handleOnClick()}>
+        <Button variant="contained" color="secondary" className={classes.button} onClick={() => Props.handleOnClick("start")}>
         Start !
       </Button>
     )
 }
+
+
+function ResetButton(Props: buttonProps) {
+    const classes = useStyles();
+
+    return (
+        <Button variant="contained" color="primary" className={classes.button} onClick={() => Props.handleOnClick("reset")}>
+        Reset !
+      </Button>
+    )
+}
+
+
 
 interface Props {}
 
@@ -35,6 +48,7 @@ interface State {
     player1Win: boolean,
     player2Win: boolean,
     start: boolean,
+    reset: boolean,
     message: string
 }
 
@@ -48,6 +62,7 @@ export default class Board extends React.Component<Props, State> {
             player1Win: false,
             player2Win: false,
             start: false,
+            reset: true,
             message: "",
         };
         this.handleOnClick = this.handleOnClick.bind(this);
@@ -55,34 +70,41 @@ export default class Board extends React.Component<Props, State> {
         this.setRock = this.setRock.bind(this);
     }
 
-    handleOnClick() : void {
-
-
-        fetch('http://localhost:8888/api/reset', {
-            mode: 'cors',
-        })
-            .then(response => response.json())
-            .then(response => {
-                this.setState({
-                    message: response["turn"]
+    handleOnClick(cmd: string) : void {
+        if (cmd === "start" && this.state.reset){
+            fetch('http://localhost:8888/api/start', {
+                mode: 'cors',
+            })
+                .then(res => res.json())
+                .then(res => {
+                    this.setState({
+                        board: res["board"],
+                        finish: res["finish"],
+                        player1Win: res["player1-win"],
+                        player2Win: res["player2-win"],
+                        start: true,
+                        reset: false,
+                    })
                 })
-            });
-
-
-
-        fetch('http://localhost:8888/api/start', {
-            mode: 'cors',
-        })
-            .then(response => response.json())
-            .then(response => {
-                this.setState({
-                    board: response["board"],
-                    finish: response["finish"],
-                    player1Win: response["player1-win"],
-                    player2Win: response["player2-win"],
-                    start: true
+        } else if(cmd === "reset"){
+            fetch('http://localhost:8888/api/reset', {
+                mode: 'cors',
+            })
+                .then(res => res.json())
+                .then(res => {
+                    let message = "";
+                    if (res["turn"]) message = "あなたは先攻!";
+                    else message = "あなたは後攻！";
+                    this.setState({
+                        message: message,
+                        board: res["board"],
+                        start: false,
+                        reset: true
+                    })
                 });
-            });
+        }
+
+
     }
 
 
@@ -120,15 +142,15 @@ export default class Board extends React.Component<Props, State> {
 
                     if(res["finish"] && res["player1-win"]) {
                         this.setState({
-                            message: "You Win!"
+                            message: "あなたの勝ち!"
                         })
                     } else if(res["finish"] && res["player2-win"]){
                         this.setState({
-                            message: "You Lose!"
+                            message: "あなたの負け!"
                         })
                     } else if(res["finish"]){
                         this.setState({
-                            message: "Draw!"
+                            message: "引き分け!"
                         })
                     }
                 })
@@ -163,7 +185,8 @@ export default class Board extends React.Component<Props, State> {
                 <Square index={8} rock={this.state.board[7]} available={this.judgeAvailability(this.state.board[7])} setRock={() => this.setRock(8)}/>
                 <Square index={9} rock={this.state.board[8]} available={this.judgeAvailability(this.state.board[8])} setRock={() => this.setRock(9)}/>
                 </div>
-                <SubmitButton handleOnClick={() => this.handleOnClick()}/>
+                <StartButton handleOnClick={() => this.handleOnClick("start")}/>
+                <ResetButton handleOnClick={() => this.handleOnClick("reset")}/>
             </div>
 
         )

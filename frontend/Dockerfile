@@ -8,8 +8,7 @@ COPY code/package-lock.json code/package-lock.json
 COPY code/package.json code/package.json
 COPY code/tsconfig.json code/tsconfig.json
 COPY code/yarn.lock code/yarn.lock
-RUN ls code/src/
 
 WORKDIR /code/
-RUN npm install
+RUN yarn install
 RUN yarn build

@@ -11,12 +11,14 @@
 実際のプレイ画面
 <img src="pics/tictactoe.gif"/>
 
-### ローカルで動かす
+### 動かす
 
 using docker-compose
 
 ```
-$ docker-compose up --build
+# top directory of thie repository
+$ docker network create my_network
+$ docker-compose -f ./docker-compose-production.yml up --build
 ```
 
 ### アーキテクチャ
@@ -24,7 +26,7 @@ $ docker-compose up --build
 現在は、dockerで動かしている。
 将来的には、Appコンテナの前に、プロキシサーバーのコンテナを置くのが良いのだろうか？
 
-<img src="./pics/arch-local.jpeg"/>
+<img src="./pics/product.jpeg"/>
 
 
 ### Q学習

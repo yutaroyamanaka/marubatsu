@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  nginx:
+    restart: always
+    image: nginx
+    depends_on:
+      - frontend
+      - backend
+    ports:
+      - "80:80"
+    volumes:
+      - "./nginx/:/etc/nginx/"
+    networks:
+      - my_network
+  frontend:
+    restart: always
+    image: marubatsu-frontend
+    build: ./frontend
+    networks:
+      - my_network
+    depends_on:
+      - backend
+    expose:
+      - "3000"
+    command: yarn start
+
+  backend:
+    restart: always
+    image: marubatsu-backend
+    build: ./backend
+    expose:
+      - "8888"
+    networks:
+      - my_network
+networks:
+  my_network:
+    external: true

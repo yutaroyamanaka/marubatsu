@@ -12,7 +12,7 @@ player1 = Player()
 player2 = QLearningPlayer(epsilon=0)
 
 
-with open("./rl/q-param.pickle", "rb") as f:
+with open("../rl/q-param.pickle", "rb") as f:
     dic = pickle.load(f)
     player2.set_q(dic)
 

@@ -26,7 +26,7 @@ $ docker-compose -f ./docker-compose-production.yml up --build
 現在は、dockerで動かしている。
 将来的には、Appコンテナの前に、プロキシサーバーのコンテナを置くのが良いのだろうか？
 
-<img src="./pics/arch-production.jpeg"/>
+<img src="./pics/product.jpeg"/>
 
 
 ### Q学習

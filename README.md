@@ -18,7 +18,7 @@ using docker-compose
 ```
 # top directory of thie repository
 $ docker network create my_network
-$ docker-compose -f ./docker-compose-production.yml up --build
+$ docker-compose up --build
 ```
 
 ### アーキテクチャ
@@ -26,7 +26,7 @@ $ docker-compose -f ./docker-compose-production.yml up --build
 現在は、dockerで動かしている。
 将来的には、Appコンテナの前に、プロキシサーバーのコンテナを置くのが良いのだろうか？
 
-<img src="./pics/product.jpeg"/>
+<img src="./pics/arch-local.jpeg"/>
 
 
 ### Q学習

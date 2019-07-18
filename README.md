@@ -18,6 +18,7 @@ using docker-compose
 ```
 # frontのコンテナだけ起動して、yarn buildする。
 $ docker-compose -f ./docker-compose-production.yml up --build
+
 ```
 
 ### アーキテクチャ
@@ -25,6 +26,7 @@ $ docker-compose -f ./docker-compose-production.yml up --build
 現在は、dockerで動かしている。
 
 <img src="./pics/product.png"/>
+
 
 
 ### Q学習

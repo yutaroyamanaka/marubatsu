@@ -16,17 +16,15 @@
 using docker-compose
 
 ```
-# top directory of thie repository
-$ docker network create my_network
+# frontのコンテナだけ起動して、yarn buildする。
 $ docker-compose -f ./docker-compose-production.yml up --build
 ```
 
 ### アーキテクチャ
 
 現在は、dockerで動かしている。
-将来的には、Appコンテナの前に、プロキシサーバーのコンテナを置くのが良いのだろうか？
 
-<img src="./pics/product.jpeg"/>
+<img src="./pics/product.png"/>
 
 
 ### Q学習

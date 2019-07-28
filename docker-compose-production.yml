@@ -15,5 +15,7 @@ services:
     restart: always
     image: marubatsu-backend
     build: ./backend
+    environment:
+      - PICKLE_PATH=../rl/q-param.pickle
     expose:
       - "8888"

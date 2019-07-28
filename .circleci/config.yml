@@ -16,8 +16,3 @@ jobs:
           name: run test
           command: python api_test.py
           working_directory: backend/api
-
-  filters:
-    branches:
-      ignore:
-        - feature_firebase_development

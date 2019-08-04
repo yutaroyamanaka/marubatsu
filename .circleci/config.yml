@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  test:
     working_directory: ~/marubatsu
     docker:
       - image: circleci/python:3.7
@@ -16,4 +16,32 @@ jobs:
           name: run test
           command: python api_test.py
           working_directory: backend/api
+  deploy:
+    docker:
+      - image: circleci/node:10.7
+    steps:
+      - checkout
+      - run:
+          name: install packages
+          command: yarn install
+          working_directory: frontend/code
+      - run:
+          name: build
+          command: yarn build
+          working_directory: frontend/code
+      - run:
+          name: deploy to Firebase Hosting
+          command: ./node_modules/.bin/firebase deploy --token=$FIREBASE_TOKEN
+          working_directory: frontend/code
+workflows:
+  version: 2
+  test_deploy:
+    jobs:
+      - test
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
 

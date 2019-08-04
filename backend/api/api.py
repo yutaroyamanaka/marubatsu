@@ -12,10 +12,9 @@ player1 = Player()
 player2 = QLearningPlayer(epsilon=0)
 
 
-with open("../rl/q-param.pickle", "rb") as f:
+with open(os.environ["PICKLE_PATH"], "rb") as f:
     dic = pickle.load(f)
     player2.set_q(dic)
-
 ttt = TicTacToe(player1, player2)
 
 
@@ -122,4 +121,4 @@ def error_handler(error):
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=8888)
+    app.run()

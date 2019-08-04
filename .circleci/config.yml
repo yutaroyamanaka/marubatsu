@@ -26,6 +26,10 @@ jobs:
           command: yarn install
           working_directory: frontend/code
       - run:
+          name: create .env
+          commnad: echo $ENV_FILE | base64 --decode > .env
+          working_directory: frontend/code
+      - run:
           name: build
           command: yarn build
           working_directory: frontend/code

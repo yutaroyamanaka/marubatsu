@@ -16,7 +16,7 @@ https://marubatsu-35b6e.firebaseapp.com/
 
 ### デプロイフロー
 
-<img src="./pics/deplo-flow.png"/>
+<img src="./pics/deploy-flow.png"/>
 
 
 ### dockerで動かすなら

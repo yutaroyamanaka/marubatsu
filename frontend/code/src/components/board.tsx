@@ -72,7 +72,7 @@ export default class Board extends React.Component<Props, State> {
 
     handleOnClick(cmd: string) : void {
         if (cmd === "start" && this.state.reset){
-            fetch(process.env.REACT_API_URL + '/api/start', {
+            fetch(process.env.REACT_APP_API_URL + '/api/start', {
                 mode: 'cors',
             })
                 .then(res => res.json())
@@ -87,7 +87,7 @@ export default class Board extends React.Component<Props, State> {
                     })
                 })
         } else if(cmd === "reset"){
-            fetch(process.env.REACT_API_URL + '/api/reset', {
+            fetch(process.env.REACT_APP_API_URL + '/api/reset', {
                 mode: 'cors',
             })
                 .then(res => res.json())
@@ -119,7 +119,7 @@ export default class Board extends React.Component<Props, State> {
                     board: board,
                 });
 
-                fetch(process.env.REACT_API_URL + '/api/play', {
+                fetch(process.env.REACT_APP_API_URL + '/api/play', {
                     method: "POST",
                     mode: 'cors',
                     body: JSON.stringify({"idx": index}),

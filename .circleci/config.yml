@@ -27,7 +27,7 @@ jobs:
           working_directory: frontend/code
       - run:
           name: create .env
-          commnad: echo $ENV_FILE | base64 --decode > .env
+          command: echo $ENV_FILE | base64 --decode > .env
           working_directory: frontend/code
       - run:
           name: build

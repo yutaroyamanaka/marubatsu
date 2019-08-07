@@ -7,15 +7,20 @@ class Game(object):
         self.q = q
 
     # ボード, 勝敗ついたかどうか、エージェントの勝ち負けを返す
-    def play(self, board, com):
-        other = "O" if com == "X" else "X"
-        if self.player_wins(board, other):
+    def play(self, board, human):
+        agent = "O" if human == "X" else "X"
+        if self.player_wins(board, human):
             # エージェントの負け
-            return board, True, False
+            result = {"agent_wins": False, "end": True, "draw": False}
+            return board, result
         else:
             actions = self.available_moves(board)
+
+            if len(actions) == 0:
+                result = {"agent_wins": False, "end": True, "draw": True}
+                return board, result
+
             qs = [self.getQ(tuple(board), a) for a in actions]
-            
             maxQ = max(qs)
 
             if qs.count(maxQ) > 1:
@@ -23,12 +28,15 @@ class Game(object):
                 i = random.choice(best_options)
             else:
                 i = qs.index(maxQ)
-            board[actions[i] - 1] = other
+            board[actions[i] - 1] = agent
 
-            if self.player_wins(board, other):
+            if self.player_wins(board, agent):
                 # エージェントの勝ち
-                return board, True, True
-            return board, False, False
+                result = {"agent_wins": True, "end": True, "draw": False}
+                return board, result
+
+            result = {"agent_wins": False, "end": False, "draw": False}
+            return board, result
 
     @staticmethod
     def available_moves(board):

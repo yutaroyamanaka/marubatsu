@@ -22,12 +22,11 @@ def play():
         json = request.get_json()
         board = json["board"]
         char = json["char"]
-        board, end, win = game.play(board, char)
+        board, result = game.play(board, char)
 
         res = {
             "board": board,
-            "end": end,
-            "win": win
+            "result": result
         }
 
         return jsonify(res), 200

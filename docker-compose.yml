@@ -11,6 +11,8 @@ services:
       - backend
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend/code:/code/
     command: yarn start
 
   backend:
@@ -21,6 +23,8 @@ services:
       - "8888:8888"
     networks:
       - my_network
+    environment:
+      - PICKLE_PATH=../rl/q-param.pickle
 networks:
   my_network:
     external: true

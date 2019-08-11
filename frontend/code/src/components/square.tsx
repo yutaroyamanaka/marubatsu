@@ -3,7 +3,6 @@ import * as React from 'react';
 
 interface Props {
     rock : string
-    available: boolean
     index: number
     setRock(): void
 }

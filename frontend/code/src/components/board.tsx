@@ -14,42 +14,28 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface buttonProps {
-    handleOnClick(cmd : string):void;
+    initializeGame(): void
 }
 
-function StartButton(Props: buttonProps) {
+function InitButton(Props: buttonProps) {
     const classes = useStyles();
 
     return(
-        <Button variant="contained" color="secondary" className={classes.button} onClick={() => Props.handleOnClick("start")}>
+        <Button variant="contained" color="secondary" className={classes.button} onClick={() => Props.initializeGame()}>
         Start !
       </Button>
     )
 }
 
-
-function ResetButton(Props: buttonProps) {
-    const classes = useStyles();
-
-    return (
-        <Button variant="contained" color="primary" className={classes.button} onClick={() => Props.handleOnClick("reset")}>
-        Reset !
-      </Button>
-    )
-}
-
-
-
 interface Props {}
 
 interface State {
     board: Array<string>,
-    finish: boolean,
-    player1Win: boolean,
-    player2Win: boolean,
     start: boolean,
-    reset: boolean,
-    message: string
+    message: string,
+    turn: boolean,
+    lock: boolean,
+    mark: string,
 }
 
 export default class Board extends React.Component<Props, State> {
@@ -58,110 +44,135 @@ export default class Board extends React.Component<Props, State> {
         super(props);
         this.state = {
             board: [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            finish: false,
-            player1Win: false,
-            player2Win: false,
             start: false,
-            reset: true,
             message: "",
+            turn: Math.random() > 0.5,
+            lock: true,
+            mark: "",
         };
-        this.handleOnClick = this.handleOnClick.bind(this);
-        this.judgeAvailability = this.judgeAvailability.bind(this);
+
+        this.initializeGame = this.initializeGame.bind(this);
         this.setRock = this.setRock.bind(this);
     }
 
-    handleOnClick(cmd: string) : void {
-        if (cmd === "start" && this.state.reset){
-            fetch(process.env.REACT_APP_API_URL + '/api/start', {
-                mode: 'cors',
+
+    async initializeGame() {
+        this.setState({
+            board: [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            turn: Math.random() > 0.5,
+        });
+
+        if (this.state.turn) {
+            /* 人間が最初にプレーする。 */
+            this.setState({
+                message: "あなたが先攻です。",
+                lock: false,
+                mark: "O",
+                start: true,
             })
-                .then(res => res.json())
-                .then(res => {
-                    this.setState({
-                        board: res["board"],
-                        finish: res["finish"],
-                        player1Win: res["player1-win"],
-                        player2Win: res["player2-win"],
-                        start: true,
-                        reset: false,
-                    })
-                })
-        } else if(cmd === "reset"){
-            fetch(process.env.REACT_APP_API_URL + '/api/reset', {
-                mode: 'cors',
-            })
-                .then(res => res.json())
-                .then(res => {
-                    let message = "";
-                    if (res["turn"]) message = "あなたは先攻!";
-                    else message = "あなたは後攻！";
-                    this.setState({
-                        message: message,
-                        board: res["board"],
-                        start: false,
-                        reset: true
-                    })
-                });
-        }
+        } else {
 
-
-    }
-
-
-    setRock(index: number): void {
-        let board = this.state.board;
-        if (this.state.start && !this.state.finish) {
-            if (board[index-1] !== " ") {
-                alert("そこには置けません！")
-            } else{
-                board[index-1] = 'X';
-                this.setState({
-                    board: board,
-                });
-
-                fetch(process.env.REACT_APP_API_URL + '/api/play', {
-                    method: "POST",
+            let res = await fetch(process.env.REACT_APP_API_URL + '/api/play', {
                     mode: 'cors',
-                    body: JSON.stringify({"idx": index}),
+                    method: 'POST',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
-                    }
-                }).then(res => res.json())
-                .then( res => {
-                    if(res["finish"]) this.setState({
-                        start: false
-                    });
+                    },
+                    body: JSON.stringify({
+                        board: [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+                        char: 'X',
+                    })
+                });
 
-                    this.setState({
-                        board: res["board"],
-                        finish: res["finish"],
-                        player1Win: res["player1-win"],
-                        player2Win: res["player2-win"]
-                    });
+            let result = await res.json();
+            this.setState({
+                message: "あなたは後攻です",
+                board: result["board"],
+                lock: false,
+                mark: "X",
+                start: true,
+            })
 
-                    if(res["finish"] && res["player1-win"]) {
-                        this.setState({
-                            message: "あなたの勝ち!"
-                        })
-                    } else if(res["finish"] && res["player2-win"]){
-                        this.setState({
-                            message: "あなたの負け!"
-                        })
-                    } else if(res["finish"]){
-                        this.setState({
-                            message: "引き分け!"
-                        })
-                    }
-                })
-            }
         }
-
     }
 
-    judgeAvailability(rock: string) : boolean {
-        if(rock === " ") return true;
-        else return false;
+
+    async setRock(index: number) {
+        if(!this.state.lock && this.state.start) {
+            if(this.state.board[index-1] === " ") {
+                let board = this.state.board;
+                let mark = this.state.mark;
+
+                board[index-1] = mark;
+
+                this.setState({
+                    board: board,
+                    /* 他の面が押せないようにロック */
+                    lock: true,
+                    message: "",
+                });
+
+
+                let res = await fetch(process.env.REACT_APP_API_URL + '/api/play', {
+                    mode: 'cors',
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        board: board,
+                        char: mark,
+                    })
+                });
+
+                let data = await res.json();
+                console.log(data);
+
+                if (data["result"]["end"]) {
+                    /* ゲーム終了 */
+                    if(data["result"]["draw"]) {
+                        this.setState({
+                            board: data["board"],
+                            message: "引き分けです！",
+                            lock: true,
+                        });
+                    } else if(data["result"]["agent_wins"]) {
+                        this.setState({
+                            board: data["board"],
+                            message: "あなたの負けです。",
+                            lock: true,
+                        })
+                    } else {
+                        this.setState({
+                            board: data["board"],
+                            message: "あなたの勝ちです！",
+                            lock: true,
+                        })
+                    }
+                } else{
+                    if(this.isAvailable(data["board"])){
+                        this.setState({
+                        board: data["board"],
+                            /* ロックを解除する */
+                        lock: false,
+                        })
+                    } else {
+                        this.setState({
+                        board: data["board"],
+                            /* ロックを解除する */
+                        message: "引き分けです！",
+                        lock: true,
+                        })
+                    }
+                }
+            }
+        }
+    }
+
+    isAvailable(board: Array<string>): boolean {
+        return board.includes(" ")
     }
 
 
@@ -170,22 +181,21 @@ export default class Board extends React.Component<Props, State> {
             <div>
                 <Message message={this.state.message}/>
                 <div className="board-row">
-                <Square index={1} rock={this.state.board[0]} available={this.judgeAvailability(this.state.board[0])} setRock={() => this.setRock(1)}/>
-                <Square index={2} rock={this.state.board[1]} available={this.judgeAvailability(this.state.board[1])} setRock={() => this.setRock(2)}/>
-                <Square index={3} rock={this.state.board[2]} available={this.judgeAvailability(this.state.board[2])} setRock={() => this.setRock(3)}/>
+                <Square index={1} rock={this.state.board[0]} setRock={() => this.setRock(1)}/>
+                <Square index={2} rock={this.state.board[1]} setRock={() => this.setRock(2)}/>
+                <Square index={3} rock={this.state.board[2]} setRock={() => this.setRock(3)}/>
                 </div>
                 <div className="board-row">
-                <Square index={4} rock={this.state.board[3]} available={this.judgeAvailability(this.state.board[3])} setRock={() => this.setRock(4)}/>
-                <Square index={5} rock={this.state.board[4]} available={this.judgeAvailability(this.state.board[4])} setRock={() => this.setRock(5)}/>
-                <Square index={6} rock={this.state.board[5]} available={this.judgeAvailability(this.state.board[5])} setRock={() => this.setRock(6)}/>
+                <Square index={4} rock={this.state.board[3]} setRock={() => this.setRock(4)}/>
+                <Square index={5} rock={this.state.board[4]} setRock={() => this.setRock(5)}/>
+                <Square index={6} rock={this.state.board[5]} setRock={() => this.setRock(6)}/>
                 </div>
                 <div className="board-row">
-                <Square index={7} rock={this.state.board[6]} available={this.judgeAvailability(this.state.board[6])} setRock={() => this.setRock(7)}/>
-                <Square index={8} rock={this.state.board[7]} available={this.judgeAvailability(this.state.board[7])} setRock={() => this.setRock(8)}/>
-                <Square index={9} rock={this.state.board[8]} available={this.judgeAvailability(this.state.board[8])} setRock={() => this.setRock(9)}/>
+                <Square index={7} rock={this.state.board[6]} setRock={() => this.setRock(7)}/>
+                <Square index={8} rock={this.state.board[7]} setRock={() => this.setRock(8)}/>
+                <Square index={9} rock={this.state.board[8]} setRock={() => this.setRock(9)}/>
                 </div>
-                <StartButton handleOnClick={() => this.handleOnClick("start")}/>
-                <ResetButton handleOnClick={() => this.handleOnClick("reset")}/>
+                <InitButton initializeGame={() => this.initializeGame()}/>
             </div>
 
         )

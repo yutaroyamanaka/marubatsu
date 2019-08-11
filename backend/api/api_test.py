@@ -13,9 +13,20 @@ class TestGetAPIClient(unittest.TestCase):
     def test_best_action(self):
         res = self.app.post("/api/play", data=json.dumps(dict(
             board=["X", "X", "O", " ", "O", " ", " ", " ", " "],
-            char = "X"
+            char="X"
         )), content_type="application/json")
 
+        data = json.loads(res.data)
+        assert res.status_code == 200
+        assert data["result"]["agent_wins"] is True
+        assert data["result"]["end"] is True
+        assert data["result"]["draw"] is False
+
+    def test_agent_win(self):
+        res = self.app.post("/api/play", data=json.dumps(dict(
+            board=["X", "X", " ", " ", "O", " ", "O", "O", " "],
+            char="O"
+        )), content_type="application/json")
         data = json.loads(res.data)
         assert res.status_code == 200
         assert data["result"]["agent_wins"] is True
@@ -25,7 +36,7 @@ class TestGetAPIClient(unittest.TestCase):
     def test_draw(self):
         res = self.app.post("/api/play", data=json.dumps(dict(
             board=["X", "O", "O", "O", "O", "X", "X", "X", "O"],
-            char = "X"
+            char="X"
         )), content_type="application/json")
 
         data = json.loads(res.data)

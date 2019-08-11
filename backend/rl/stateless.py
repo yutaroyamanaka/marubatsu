@@ -1,5 +1,5 @@
 import random
-
+import copy
 
 class Game(object):
 
@@ -15,10 +15,21 @@ class Game(object):
             return board, result
         else:
             actions = self.available_moves(board)
+            processed = board[:]
 
             if len(actions) == 0:
                 result = {"agent_wins": False, "end": True, "draw": True}
                 return board, result
+
+            # 順序対策
+            if agent == 'X':
+                for i in range(len(board)):
+                    if board[i] == 'O':
+                        board[i] = 'X'
+                        continue
+                    elif board[i] == 'X':
+                        board[i] = 'O'
+                        continue
 
             qs = [self.getQ(tuple(board), a) for a in actions]
             maxQ = max(qs)
@@ -28,15 +39,15 @@ class Game(object):
                 i = random.choice(best_options)
             else:
                 i = qs.index(maxQ)
-            board[actions[i] - 1] = agent
+            processed[actions[i] - 1] = agent
 
-            if self.player_wins(board, agent):
+            if self.player_wins(processed, agent):
                 # エージェントの勝ち
                 result = {"agent_wins": True, "end": True, "draw": False}
-                return board, result
+                return processed, result
 
             result = {"agent_wins": False, "end": False, "draw": False}
-            return board, result
+            return processed, result
 
     @staticmethod
     def available_moves(board):

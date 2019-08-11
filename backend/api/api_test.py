@@ -22,7 +22,6 @@ class TestGetAPIClient(unittest.TestCase):
         assert data["result"]["end"] is True
         assert data["result"]["draw"] is False
 
-
     def test_draw(self):
         res = self.app.post("/api/play", data=json.dumps(dict(
             board=["X", "O", "O", "O", "O", "X", "X", "X", "O"],

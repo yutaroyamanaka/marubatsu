@@ -55,7 +55,6 @@ export default class Board extends React.Component<Props, State> {
         this.setRock = this.setRock.bind(this);
     }
 
-
     async initializeGame() {
         this.setState({
             board: [" ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -96,7 +95,6 @@ export default class Board extends React.Component<Props, State> {
 
         }
     }
-
 
     async setRock(index: number) {
         if(!this.state.lock && this.state.start) {
@@ -175,7 +173,6 @@ export default class Board extends React.Component<Props, State> {
         return board.includes(" ")
     }
 
-
     render() {
         return(
             <div>
@@ -197,7 +194,6 @@ export default class Board extends React.Component<Props, State> {
                 </div>
                 <InitButton initializeGame={() => this.initializeGame()}/>
             </div>
-
         )
     }
 }

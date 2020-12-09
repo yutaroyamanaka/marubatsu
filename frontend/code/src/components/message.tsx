@@ -30,7 +30,6 @@ export default class Message extends React.Component<Props, State> {
         }
     }
 
-
     render() {
         return(
             <p style={style}>

@@ -4,10 +4,10 @@ MAINTAINER YUTARO_YAMANAKA
 COPY . /marubatsu/backend/
 WORKDIR /marubatsu/backend/
 
-
 RUN pip install -r ./requirements.txt
-EXPOSE 8888
 
+EXPOSE 5000
 WORKDIR /marubatsu/backend/api
-CMD ["gunicorn", "api:app", "-b", "0.0.0.0:8888"]
+ENV PICKLE_PATH="/marubatsu/backend/rl/q-param.pickle"
 
+RUN python api.py

@@ -65,7 +65,7 @@ export default class Board extends React.Component<Props, State> {
         if (this.state.turn) {
             /* 人間が最初にプレーする。 */
             this.setState({
-                message: "あなたが先攻です。",
+                message: "You are a first player",
                 lock: false,
                 mark: "O",
                 start: true,
@@ -87,7 +87,7 @@ export default class Board extends React.Component<Props, State> {
 
             let result = await res.json();
             this.setState({
-                message: "あなたは後攻です",
+                message: "You are a second player",
                 board: result["board"],
                 lock: false,
                 mark: "X",
@@ -135,19 +135,19 @@ export default class Board extends React.Component<Props, State> {
                     if(data["result"]["draw"]) {
                         this.setState({
                             board: data["board"],
-                            message: "引き分けです！",
+                            message: "Draw",
                             lock: true,
                         });
                     } else if(data["result"]["agent_wins"]) {
                         this.setState({
                             board: data["board"],
-                            message: "あなたの負けです。",
+                            message: "You lose!",
                             lock: true,
                         })
                     } else {
                         this.setState({
                             board: data["board"],
-                            message: "あなたの勝ちです！",
+                            message: "You win!",
                             lock: true,
                         })
                     }

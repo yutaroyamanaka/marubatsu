@@ -22,6 +22,12 @@ $ docker-compose up --build
 ```
 Check http://localhost:3000
 
+# Note
+
+I used simple Q-learning for training (See the following equation and [python file](backend/rl/qlearn.py)).
+
+<img src="./pics/q-learning.png">
+
 # Licence
 
 Marubatsu AI is under [MIT license](https://en.wikipedia.org/wiki/MIT_License).
